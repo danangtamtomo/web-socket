@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Darwinslider</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.jquery.min.js"></script>
+  <style media="screen">
+    .swiper-container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Slider main container -->
+  <div class="swiper-container">
+    <!-- Additional required wrapper -->
+    <div class="swiper-wrapper">
+      <!-- Slides -->
+      <div class="swiper-slide"><img src="https://unsplash.it/1920/1080/?random" alt=""></div>
+      <div class="swiper-slide"><img src="https://unsplash.it/1920/1080/?random" alt=""></div>
+      <div class="swiper-slide"><img src="https://unsplash.it/1920/1080/?random" alt=""></div>
+      <div class="swiper-slide"><img src="https://unsplash.it/1920/1080/?random" alt=""></div>
+      <div class="swiper-slide"><img src="https://unsplash.it/1920/1080/?random" alt=""></div>
+      <div class="swiper-slide"><img src="https://unsplash.it/1920/1080/?random" alt=""></div>
+      ...
+    </div>
+    <!-- If we need pagination -->
+    <div class="swiper-pagination"></div>
+
+    <!-- If we need navigation buttons -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+    <!-- If we need scrollbar -->
+    <div class="swiper-scrollbar"></div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/3.7.2/firebase.js"></script>
+  <script>
+    $(document).ready(function() {
+      //initialize swiper when document ready
+      var mySwiper = new Swiper('.swiper-container', {
+        // Optional parameters
+        loop: false,
+        // If we need pagination
+        pagination: '.swiper-pagination',
+        keyboardControl: true,
+
+        // Navigation arrows
+        nextButton: '.swiper-button-next',
+        prevButton: '.swiper-button-prev',
+
+        // And if we need scrollbar
+        scrollbar: '.swiper-scrollbar',
+      })
+
+
+      // Initialize Firebase
+      // TODO: Replace with your project's customized code snippet
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCRopSBrHBuR25b2DW7lESyMk42Ulj-ynw",
+        authDomain: "darwinslider.firebaseapp.com",
+        databaseURL: "https://darwinslider.firebaseio.com",
+        storageBucket: "darwinslider.appspot.com",
+        messagingSenderId: "356905087917"
+      };
+      firebase.initializeApp(config);
+      var database = firebase.database();
+
+
+      $("body").keydown(function(e) {
+
+        if (e.keyCode == 37) { // left
+          firebase.database().ref('slidercommands').set({
+            command: {
+              direction: 'previous',
+              random: Math.random()
+            }
+          });
+        } else
+        if (e.keyCode == 39) { // right
+          firebase.database().ref('slidercommands').set({
+            command: {
+              direction: 'next',
+              random: Math.random()
+            }
+          });
+        }
+      });
+
+      var commandListener = firebase.database().ref('slidercommands');
+      commandListener.on('value', function(command) {
+        if (command.val().command.direction == 'previous') {
+          mySwiper.slidePrev(false, 1000)
+        } else if (command.val().command.direction == 'next') {
+          mySwiper.slideNext(false, 1000)
+        }
+      });
+
+    });
+  </script>
+</body>
+
+</html>
